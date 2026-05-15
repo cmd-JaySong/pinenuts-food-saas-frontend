@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import {
   Fold,
@@ -16,12 +15,10 @@ const emit = defineEmits<{
   (e: 'toggle-collapse'): void
 }>()
 
-const router = useRouter()
 const userStore = useUserStore()
 
 function handleLogout() {
-  userStore.clearToken()
-  router.push('/login')
+  userStore.logout()
 }
 </script>
 
@@ -36,10 +33,11 @@ function handleLogout() {
     <div class="header-right">
       <el-dropdown trigger="click">
         <span class="user-dropdown">
-          <el-avatar :size="30" style="background-color: #409eff;">
-            {{ userStore.userInfo?.username?.toString().charAt(0) || 'U' }}
+          <el-avatar v-if="userStore.avatar" :size="30" :src="userStore.avatar" />
+          <el-avatar v-else :size="30" style="background-color: #409eff;">
+            {{ userStore.nickname?.charAt(0) || 'U' }}
           </el-avatar>
-          <span class="username">{{ userStore.userInfo?.username || '管理员' }}</span>
+          <span class="username">{{ userStore.nickname || '管理员' }}</span>
           <el-icon><ArrowDown /></el-icon>
         </span>
         <template #dropdown>

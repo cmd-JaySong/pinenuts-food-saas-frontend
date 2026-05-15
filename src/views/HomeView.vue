@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { getHealth } from '@/api/health'
+import { useUserStore } from '@/stores/user'
 import { CircleCheckFilled, CircleCloseFilled } from '@element-plus/icons-vue'
 
+const userStore = useUserStore()
 const healthData = ref<Record<string, unknown> | null>(null)
 const loading = ref(false)
 const error = ref('')
@@ -35,12 +37,48 @@ onMounted(() => {
       <el-col :span="24">
         <el-card shadow="hover">
           <template #header>
-            <span style="font-size: 18px; font-weight: 600;">欢迎使用松籽餐饮数字化管理平台</span>
+            <span style="font-size: 18px; font-weight: 600;">欢迎回来，{{ userStore.nickname || '管理员' }}</span>
           </template>
           <p style="color: #606266; line-height: 1.8;">
             这是一个集门店管理、菜品管理、库存管理等功能于一体的餐饮SaaS管理平台。
             请通过左侧菜单导航到各功能模块。
           </p>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <!-- 统计卡片 -->
+    <el-row :gutter="20" style="margin-top: 20px;">
+      <el-col :xs="12" :sm="6">
+        <el-card shadow="hover" class="stat-card">
+          <div class="stat-item">
+            <div class="stat-value">--</div>
+            <div class="stat-label">总门店数</div>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :xs="12" :sm="6">
+        <el-card shadow="hover" class="stat-card">
+          <div class="stat-item">
+            <div class="stat-value">--</div>
+            <div class="stat-label">总菜品数</div>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :xs="12" :sm="6">
+        <el-card shadow="hover" class="stat-card">
+          <div class="stat-item">
+            <div class="stat-value">--</div>
+            <div class="stat-label">今日订单</div>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :xs="12" :sm="6">
+        <el-card shadow="hover" class="stat-card">
+          <div class="stat-item">
+            <div class="stat-value">--</div>
+            <div class="stat-label">库存预警</div>
+          </div>
         </el-card>
       </el-col>
     </el-row>
@@ -89,5 +127,24 @@ onMounted(() => {
 <style lang="scss" scoped>
 .home-view {
   padding: 0;
+}
+
+.stat-card {
+  .stat-item {
+    text-align: center;
+    padding: 10px 0;
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #303133;
+    }
+
+    .stat-label {
+      margin-top: 8px;
+      font-size: 14px;
+      color: #909399;
+    }
+  }
 }
 </style>

@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { reactive, ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import { ElMessage } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
-import { ref } from 'vue'
 
 const router = useRouter()
+const route = useRoute()
 const userStore = useUserStore()
 const formRef = ref<FormInstance>()
 const loading = ref(false)
@@ -31,10 +32,16 @@ async function handleLogin() {
 
   loading.value = true
   try {
-    // 暂时模拟登录，第二周实现真正的认证
-    userStore.setToken('mock-token')
-    userStore.setUserInfo({ username: loginForm.username })
-    router.push('/')
+    await userStore.login({
+      username: loginForm.username,
+      password: loginForm.password
+    })
+    // 登录成功后跳转到 redirect 参数指定的页面或首页
+    const redirect = (route.query.redirect as string) || '/'
+    router.push(redirect)
+    ElMessage.success('登录成功')
+  } catch (e: any) {
+    ElMessage.error(e?.message || '登录失败，请检查用户名和密码')
   } finally {
     loading.value = false
   }
@@ -47,7 +54,7 @@ async function handleLogin() {
       <template #header>
         <div class="login-header">
           <img src="/vite.svg" alt="Logo" class="login-logo" />
-          <h2>松籽餐饮管理平台</h2>
+          <h2>松籽餐饮数字化管理平台</h2>
         </div>
       </template>
       <el-form
@@ -99,7 +106,8 @@ async function handleLogin() {
 }
 
 .login-card {
-  width: 420px;
+  width: 440px;
+  border-radius: 12px;
 
   .login-header {
     display: flex;
@@ -108,8 +116,8 @@ async function handleLogin() {
     gap: 12px;
 
     .login-logo {
-      width: 36px;
-      height: 36px;
+      width: 40px;
+      height: 40px;
     }
 
     h2 {
