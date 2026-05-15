@@ -18,6 +18,18 @@ const routes: RouteRecordRaw[] = [
         name: 'Home',
         component: () => import('@/views/HomeView.vue'),
         meta: { title: '首页' }
+      },
+      {
+        path: 'store',
+        name: 'Store',
+        component: () => import('@/views/store/StoreListView.vue'),
+        meta: { title: '门店管理', permission: 'store:list' }
+      },
+      {
+        path: 'staff',
+        name: 'Staff',
+        component: () => import('@/views/staff/StaffListView.vue'),
+        meta: { title: '员工管理', permission: 'staff:list' }
       }
     ]
   },
