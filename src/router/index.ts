@@ -36,6 +36,18 @@ const routes: RouteRecordRaw[] = [
         name: 'Dish',
         component: () => import('@/views/dish/DishListView.vue'),
         meta: { title: '菜品管理', permission: 'dish:list' }
+      },
+      {
+        path: 'inventory',
+        name: 'Inventory',
+        component: () => import('@/views/inventory/InventoryListView.vue'),
+        meta: { title: '库存台账', requiresAuth: true }
+      },
+      {
+        path: 'inventory/alert',
+        name: 'InventoryAlert',
+        component: () => import('@/views/inventory/InventoryAlertView.vue'),
+        meta: { title: '库存预警', requiresAuth: true }
       }
     ]
   },
