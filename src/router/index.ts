@@ -30,6 +30,12 @@ const routes: RouteRecordRaw[] = [
         name: 'Staff',
         component: () => import('@/views/staff/StaffListView.vue'),
         meta: { title: '员工管理', permission: 'staff:list' }
+      },
+      {
+        path: 'dish',
+        name: 'Dish',
+        component: () => import('@/views/dish/DishListView.vue'),
+        meta: { title: '菜品管理', permission: 'dish:list' }
       }
     ]
   },

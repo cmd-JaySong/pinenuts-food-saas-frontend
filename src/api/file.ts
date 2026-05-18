@@ -1,0 +1,11 @@
+import request from '@/utils/request'
+
+export function uploadFile(file: File) {
+  const formData = new FormData()
+  formData.append('file', file)
+  return request.post<any, any>('/api/file/upload', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
