@@ -48,6 +48,18 @@ const routes: RouteRecordRaw[] = [
         name: 'InventoryAlert',
         component: () => import('@/views/inventory/InventoryAlertView.vue'),
         meta: { title: '库存预警', requiresAuth: true }
+      },
+      {
+        path: 'purchase',
+        name: 'Purchase',
+        component: () => import('@/views/purchase/PurchaseListView.vue'),
+        meta: { title: '采购管理', requiresAuth: true }
+      },
+      {
+        path: 'purchase/approval',
+        name: 'PurchaseApproval',
+        component: () => import('@/views/purchase/PurchaseApprovalView.vue'),
+        meta: { title: '采购审批', requiresAuth: true }
       }
     ]
   },
