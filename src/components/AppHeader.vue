@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/user'
+import { useDarkMode } from '@/composables/useDarkMode'
 import {
   Fold,
   Expand,
   ArrowDown,
   SwitchButton,
+  Sunny,
+  Moon,
 } from '@element-plus/icons-vue'
+
+const { isDark, toggleDark } = useDarkMode()
 
 const props = defineProps<{
   isCollapse: boolean
@@ -31,6 +36,9 @@ function handleLogout() {
       </el-icon>
     </div>
     <div class="header-right">
+      <el-tooltip :content="isDark ? '切换亮色模式' : '切换暗色模式'" placement="bottom">
+        <el-button :icon="isDark ? Sunny : Moon" circle @click="toggleDark" />
+      </el-tooltip>
       <el-dropdown trigger="click">
         <span class="user-dropdown">
           <el-avatar v-if="userStore.avatar" :size="30" :src="userStore.avatar" />

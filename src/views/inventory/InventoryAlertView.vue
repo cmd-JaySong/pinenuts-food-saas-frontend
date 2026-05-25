@@ -14,70 +14,77 @@
       </el-form-item>
     </el-form>
 
-    <!-- 表格 -->
-    <el-table
-      :data="tableData"
-      v-loading="loading"
-      border
-      style="width: 100%"
-      :row-class-name="getRowClassName"
-    >
-      <el-table-column prop="itemName" label="物料名称" min-width="140" />
-      <el-table-column prop="storeName" label="所属门店" width="140" />
-      <el-table-column label="当前库存" width="100" align="right">
-        <template #default="scope">
-          <span style="color: #f56c6c; font-weight: 600">{{ scope.row.currentQuantity }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="alertThreshold" label="预警阈值" width="100" align="right" />
-      <el-table-column label="缺口量" width="100" align="right">
-        <template #default="scope">
-          <span style="color: #f56c6c; font-weight: 600">
-            {{ scope.row.alertThreshold - scope.row.currentQuantity }}
-          </span>
-        </template>
-      </el-table-column>
-      <el-table-column label="状态" width="100" align="center">
-        <template #default="scope">
-          <el-tag :type="scope.row.status === 0 ? 'danger' : 'success'" size="small">
-            {{ scope.row.status === 0 ? '未处理' : '已处理' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="产生时间" width="170">
-        <template #default="scope">
-          {{ formatTime(scope.row.createdAt) }}
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="180" fixed="right">
-        <template #default="scope">
-          <el-button
-            v-if="scope.row.status === 0"
-            link
-            type="primary"
-            @click="handleMarkProcessed(scope.row)"
-          >
-            标记已处理
-          </el-button>
-          <el-button link type="success" @click="goToInventory">
-            去入库
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <!-- 有数据时显示表格 + 分页 -->
+    <template v-if="tableData.length > 0 || loading">
+      <el-table
+        :data="tableData"
+        v-loading="loading"
+        border
+        style="width: 100%"
+        :row-class-name="getRowClassName"
+      >
+        <el-table-column prop="itemName" label="物料名称" min-width="140" />
+        <el-table-column prop="storeName" label="所属门店" width="140" />
+        <el-table-column label="当前库存" width="100" align="right">
+          <template #default="scope">
+            <span style="color: #f56c6c; font-weight: 600">{{ scope.row.currentQuantity }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="alertThreshold" label="预警阈值" width="100" align="right" />
+        <el-table-column label="缺口量" width="100" align="right">
+          <template #default="scope">
+            <span style="color: #f56c6c; font-weight: 600">
+              {{ scope.row.alertThreshold - scope.row.currentQuantity }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" width="100" align="center">
+          <template #default="scope">
+            <el-tag :type="scope.row.status === 0 ? 'danger' : 'success'" size="small">
+              {{ scope.row.status === 0 ? '未处理' : '已处理' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="产生时间" width="170">
+          <template #default="scope">
+            {{ formatTime(scope.row.createdAt) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="180" fixed="right">
+          <template #default="scope">
+            <el-button
+              v-if="scope.row.status === 0"
+              link
+              type="primary"
+              @click="handleMarkProcessed(scope.row)"
+            >
+              标记已处理
+            </el-button>
+            <el-button link type="success" @click="goToInventory">
+              去入库
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
 
-    <!-- 分页 -->
-    <div class="pagination-wrapper">
-      <el-pagination
-        v-model:current-page="pageNum"
-        v-model:page-size="pageSize"
-        :page-sizes="[10, 20, 50, 100]"
-        :total="total"
-        layout="total, sizes, prev, pager, next, jumper"
-        @current-change="handlePageChange"
-        @size-change="handleSizeChange"
-      />
-    </div>
+      <div class="pagination-wrapper">
+        <el-pagination
+          v-model:current-page="pageNum"
+          v-model:page-size="pageSize"
+          :page-sizes="[10, 20, 50, 100]"
+          :total="total"
+          layout="total, sizes, prev, pager, next, jumper"
+          @current-change="handlePageChange"
+          @size-change="handleSizeChange"
+        />
+      </div>
+    </template>
+    <!-- 无数据且非加载中时显示空状态 -->
+    <EmptyState
+      v-else
+      description="暂无预警信息"
+      :show-action="false"
+    />
   </div>
 </template>
 
@@ -85,6 +92,7 @@
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { useTableList } from '@/composables/useTableList'
+import EmptyState from '@/components/EmptyState.vue'
 import {
   getInventoryAlertList,
   handleInventoryAlert,

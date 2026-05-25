@@ -50,7 +50,7 @@
 
     <!-- 图表区域 -->
     <el-row :gutter="20" class="chart-row">
-      <el-col :span="12">
+      <el-col :xl="12" :lg="12" :md="24">
         <el-card shadow="hover" v-loading="lineLoading">
           <template #header>
             <span class="card-title">日营收趋势</span>
@@ -58,7 +58,7 @@
           <div ref="lineChartRef" class="chart-container"></div>
         </el-card>
       </el-col>
-      <el-col :span="12">
+      <el-col :xl="12" :lg="12" :md="24">
         <el-card shadow="hover" v-loading="barLoading">
           <template #header>
             <span class="card-title">门店营收对比</span>

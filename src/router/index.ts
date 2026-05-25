@@ -1,5 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+
+NProgress.configure({ showSpinner: false })
 
 const routes: RouteRecordRaw[] = [
   {
@@ -85,6 +89,7 @@ const router = createRouter({
 
 // 路由守卫
 router.beforeEach(async (to, _from, next) => {
+  NProgress.start()
   // 动态导入避免循环依赖
   const { useUserStore } = await import('@/stores/user')
   const userStore = useUserStore()
@@ -120,6 +125,10 @@ router.beforeEach(async (to, _from, next) => {
   }
 
   next()
+})
+
+router.afterEach(() => {
+  NProgress.done()
 })
 
 export default router

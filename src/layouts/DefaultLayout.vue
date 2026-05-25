@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import Sidebar from '@/components/Sidebar.vue'
 import AppHeader from '@/components/AppHeader.vue'
+import Breadcrumb from '@/components/Breadcrumb.vue'
+import TagsView from '@/components/TagsView.vue'
 
 const isCollapse = ref(false)
 
@@ -20,6 +22,8 @@ function toggleCollapse() {
         <AppHeader :is-collapse="isCollapse" @toggle-collapse="toggleCollapse" />
       </el-header>
       <el-main>
+        <Breadcrumb />
+        <TagsView />
         <router-view />
       </el-main>
     </el-container>
@@ -37,7 +41,7 @@ function toggleCollapse() {
 }
 
 .el-main {
-  background-color: #f0f2f5;
+  background-color: var(--el-bg-color-page);
   padding: 20px;
 }
 </style>

@@ -36,62 +36,71 @@
       </el-button>
     </div>
 
-    <!-- 表格 -->
-    <el-table :data="tableData" v-loading="loading" border style="width: 100%">
-      <el-table-column prop="storeCode" label="门店编号" width="140" />
-      <el-table-column prop="storeName" label="门店名称" min-width="150" />
-      <el-table-column prop="address" label="地址" min-width="200" show-overflow-tooltip />
-      <el-table-column prop="contactPhone" label="联系电话" width="140" />
-      <el-table-column prop="businessHours" label="营业时间" width="160" />
-      <el-table-column label="状态" width="100" align="center">
-        <template #default="scope">
-          <el-switch
-            v-model="scope.row.status"
-            :active-value="1"
-            :inactive-value="0"
-            @change="handleStatusChange(scope.row)"
-          />
-        </template>
-      </el-table-column>
-      <el-table-column label="创建时间" width="180">
-        <template #default="scope">
-          {{ formatTime(scope.row.createdAt) }}
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="150" fixed="right">
-        <template #default="scope">
-          <el-button
-            v-if="userStore.hasPermission('store:update')"
-            link
-            type="primary"
-            @click="handleEdit(scope.row)"
-          >
-            编辑
-          </el-button>
-          <el-button
-            v-if="userStore.hasPermission('store:delete')"
-            link
-            type="danger"
-            @click="handleDelete(scope.row)"
-          >
-            删除
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <!-- 有数据时显示表格 + 分页 -->
+    <template v-if="tableData.length > 0 || loading">
+      <el-table :data="tableData" v-loading="loading" border style="width: 100%">
+        <el-table-column prop="storeCode" label="门店编号" width="140" />
+        <el-table-column prop="storeName" label="门店名称" min-width="150" />
+        <el-table-column prop="address" label="地址" min-width="200" show-overflow-tooltip />
+        <el-table-column prop="contactPhone" label="联系电话" width="140" />
+        <el-table-column prop="businessHours" label="营业时间" width="160" />
+        <el-table-column label="状态" width="100" align="center">
+          <template #default="scope">
+            <el-switch
+              v-model="scope.row.status"
+              :active-value="1"
+              :inactive-value="0"
+              @change="handleStatusChange(scope.row)"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column label="创建时间" width="180">
+          <template #default="scope">
+            {{ formatTime(scope.row.createdAt) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="150" fixed="right">
+          <template #default="scope">
+            <el-button
+              v-if="userStore.hasPermission('store:update')"
+              link
+              type="primary"
+              @click="handleEdit(scope.row)"
+            >
+              编辑
+            </el-button>
+            <el-button
+              v-if="userStore.hasPermission('store:delete')"
+              link
+              type="danger"
+              @click="handleDelete(scope.row)"
+            >
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
 
-    <!-- 分页 -->
-    <div class="pagination-wrapper">
-      <el-pagination
-        v-model:current-page="pageNum"
-        v-model:page-size="pageSize"
-        :page-sizes="[10, 20, 50, 100]"
-        :total="total"
-        layout="total, sizes, prev, pager, next, jumper"
-        @current-change="handlePageChange"
-        @size-change="handleSizeChange"
-      />
-    </div>
+      <div class="pagination-wrapper">
+        <el-pagination
+          v-model:current-page="pageNum"
+          v-model:page-size="pageSize"
+          :page-sizes="[10, 20, 50, 100]"
+          :total="total"
+          layout="total, sizes, prev, pager, next, jumper"
+          @current-change="handlePageChange"
+          @size-change="handleSizeChange"
+        />
+      </div>
+    </template>
+    <!-- 无数据且非加载中时显示空状态 -->
+    <EmptyState
+      v-else
+      description="暂无数据"
+      :show-action="true"
+      action-text="新增门店"
+      @action="handleAdd"
+    />
 
     <!-- 新增/编辑弹窗 -->
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="520px" destroy-on-close>
@@ -133,6 +142,7 @@ import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'elem
 import { Plus } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import { useTableList } from '@/composables/useTableList'
+import EmptyState from '@/components/EmptyState.vue'
 import {
   getStoreList,
   createStore,

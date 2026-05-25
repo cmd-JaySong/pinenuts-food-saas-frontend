@@ -1,3 +1,11 @@
+/* 全局业务变量 */
+:root {
+  --app-content-padding: 20px;
+  --app-card-shadow: none;
+  --app-card-border: 1px solid var(--el-border-color-lighter);
+  --app-toolbar-margin: 16px;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -8,6 +16,26 @@ html, body, #app {
   height: 100%;
   width: 100%;
   font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;
+}
+
+/* 统一页面容器 padding */
+.el-main {
+  padding: var(--app-content-padding) !important;
+}
+
+/* 统一卡片样式 */
+.el-card {
+  border: var(--app-card-border);
+  box-shadow: var(--app-card-shadow) !important;
+}
+
+/* 统一工具栏（搜索区域）间距 */
+.toolbar, .search-bar, .filter-bar {
+  margin-bottom: var(--app-toolbar-margin);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 // 侧边栏样式
@@ -24,4 +52,36 @@ html, body, #app {
 .app-wrapper {
   height: 100%;
   width: 100%;
+}
+
+/* 响应式适配 */
+@media screen and (max-width: 1280px) {
+  .el-table {
+    font-size: 13px;
+  }
+}
+
+/* NProgress 样式覆盖 */
+#nprogress .bar {
+  background: var(--el-color-primary) !important;
+  height: 3px !important;
+}
+#nprogress .peg {
+  box-shadow: 0 0 10px var(--el-color-primary), 0 0 5px var(--el-color-primary) !important;
+}
+
+/* 暗色模式 */
+html.dark {
+  --app-bg-color: #141414;
+  --app-header-bg: #1d1e1f;
+  --app-sidebar-bg: #1d1e1f;
+
+  .app-breadcrumb .no-redirect {
+    color: var(--el-text-color-regular);
+  }
+
+  .tags-view-container {
+    background-color: var(--app-header-bg);
+    border-bottom-color: var(--el-border-color);
+  }
 }

@@ -103,132 +103,143 @@
         </div>
       </div>
 
-      <!-- 表格视图 -->
-      <el-table
-        v-if="viewMode === 'table'"
-        :data="tableData"
-        v-loading="loading"
-        border
-        style="width: 100%"
-        @selection-change="handleSelectionChange"
-      >
-        <el-table-column type="selection" width="50" />
-        <el-table-column label="图片" width="80" align="center">
-          <template #default="scope">
-            <el-image
-              v-if="scope.row.imageUrl"
-              :src="scope.row.imageUrl"
-              style="width: 60px; height: 60px"
-              fit="cover"
-            />
-            <div v-else class="image-placeholder">暂无</div>
-          </template>
-        </el-table-column>
-        <el-table-column prop="dishCode" label="菜品编号" width="130" />
-        <el-table-column prop="dishName" label="菜品名称" min-width="140" />
-        <el-table-column prop="categoryName" label="所属分类" width="120" />
-        <el-table-column label="价格" width="100" align="right">
-          <template #default="scope">
-            ¥{{ scope.row.price.toFixed(2) }}
-          </template>
-        </el-table-column>
-        <el-table-column label="状态" width="100" align="center">
-          <template #default="scope">
-            <el-switch
-              v-model="scope.row.status"
-              :active-value="1"
-              :inactive-value="0"
-              @change="handleStatusChange(scope.row)"
-            />
-          </template>
-        </el-table-column>
-        <el-table-column label="创建时间" width="180">
-          <template #default="scope">
-            {{ formatTime(scope.row.createdAt) }}
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="130" fixed="right">
-          <template #default="scope">
-            <el-button
-              v-if="userStore.hasPermission('dish:update')"
-              link
-              type="primary"
-              @click="handleEdit(scope.row)"
-            >
-              编辑
-            </el-button>
-            <el-button
-              v-if="userStore.hasPermission('dish:delete')"
-              link
-              type="danger"
-              @click="handleDelete(scope.row)"
-            >
-              删除
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+      <!-- 有数据时显示表格/卡片 + 分页 -->
+      <template v-if="tableData.length > 0 || loading">
+        <!-- 表格视图 -->
+        <el-table
+          v-if="viewMode === 'table'"
+          :data="tableData"
+          v-loading="loading"
+          border
+          style="width: 100%"
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column type="selection" width="50" />
+          <el-table-column label="图片" width="80" align="center">
+            <template #default="scope">
+              <el-image
+                v-if="scope.row.imageUrl"
+                :src="scope.row.imageUrl"
+                style="width: 60px; height: 60px"
+                fit="cover"
+              />
+              <div v-else class="image-placeholder">暂无</div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="dishCode" label="菜品编号" width="130" />
+          <el-table-column prop="dishName" label="菜品名称" min-width="140" />
+          <el-table-column prop="categoryName" label="所属分类" width="120" />
+          <el-table-column label="价格" width="100" align="right">
+            <template #default="scope">
+              ¥{{ scope.row.price.toFixed(2) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="状态" width="100" align="center">
+            <template #default="scope">
+              <el-switch
+                v-model="scope.row.status"
+                :active-value="1"
+                :inactive-value="0"
+                @change="handleStatusChange(scope.row)"
+              />
+            </template>
+          </el-table-column>
+          <el-table-column label="创建时间" width="180">
+            <template #default="scope">
+              {{ formatTime(scope.row.createdAt) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="130" fixed="right">
+            <template #default="scope">
+              <el-button
+                v-if="userStore.hasPermission('dish:update')"
+                link
+                type="primary"
+                @click="handleEdit(scope.row)"
+              >
+                编辑
+              </el-button>
+              <el-button
+                v-if="userStore.hasPermission('dish:delete')"
+                link
+                type="danger"
+                @click="handleDelete(scope.row)"
+              >
+                删除
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
 
-      <!-- 卡片视图 -->
-      <div v-if="viewMode === 'card'" v-loading="loading" class="card-view">
-        <el-row :gutter="16">
-          <el-col v-for="item in tableData" :key="item.id" :span="6" class="card-col">
-            <el-card :body-style="{ padding: '0' }" shadow="hover" class="dish-card">
-              <div class="card-image">
-                <el-image
-                  v-if="item.imageUrl"
-                  :src="item.imageUrl"
-                  fit="cover"
-                  style="width: 100%; height: 180px"
-                />
-                <div v-else class="card-image-placeholder">暂无图片</div>
-              </div>
-              <div class="card-content">
-                <div class="card-name">{{ item.dishName }}</div>
-                <div class="card-info">
-                  <span class="card-price">¥{{ item.price.toFixed(2) }}</span>
-                  <el-tag :type="item.status === 1 ? 'success' : 'info'" size="small">
-                    {{ item.status === 1 ? '上架' : '下架' }}
-                  </el-tag>
+        <!-- 卡片视图 -->
+        <div v-if="viewMode === 'card'" v-loading="loading" class="card-view">
+          <el-row :gutter="16">
+            <el-col v-for="item in tableData" :key="item.id" :span="6" class="card-col">
+              <el-card :body-style="{ padding: '0' }" shadow="hover" class="dish-card">
+                <div class="card-image">
+                  <el-image
+                    v-if="item.imageUrl"
+                    :src="item.imageUrl"
+                    fit="cover"
+                    style="width: 100%; height: 180px"
+                  />
+                  <div v-else class="card-image-placeholder">暂无图片</div>
                 </div>
-                <div class="card-actions">
-                  <el-button
-                    v-if="userStore.hasPermission('dish:update')"
-                    link
-                    type="primary"
-                    size="small"
-                    @click="handleEdit(item)"
-                  >
-                    编辑
-                  </el-button>
-                  <el-button
-                    v-if="userStore.hasPermission('dish:delete')"
-                    link
-                    type="danger"
-                    size="small"
-                    @click="handleDelete(item)"
-                  >
-                    删除
-                  </el-button>
+                <div class="card-content">
+                  <div class="card-name">{{ item.dishName }}</div>
+                  <div class="card-info">
+                    <span class="card-price">¥{{ item.price.toFixed(2) }}</span>
+                    <el-tag :type="item.status === 1 ? 'success' : 'info'" size="small">
+                      {{ item.status === 1 ? '上架' : '下架' }}
+                    </el-tag>
+                  </div>
+                  <div class="card-actions">
+                    <el-button
+                      v-if="userStore.hasPermission('dish:update')"
+                      link
+                      type="primary"
+                      size="small"
+                      @click="handleEdit(item)"
+                    >
+                      编辑
+                    </el-button>
+                    <el-button
+                      v-if="userStore.hasPermission('dish:delete')"
+                      link
+                      type="danger"
+                      size="small"
+                      @click="handleDelete(item)"
+                    >
+                      删除
+                    </el-button>
+                  </div>
                 </div>
-              </div>
-            </el-card>
-          </el-col>
-        </el-row>
-      </div>
+              </el-card>
+            </el-col>
+          </el-row>
+        </div>
 
-      <!-- 分页 -->
-      <div class="pagination-wrapper">
-        <el-pagination
-          v-model:current-page="pageNum"
-          v-model:page-size="pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          :total="total"
-          layout="total, sizes, prev, pager, next, jumper"
-          @current-change="handlePageChange"
-          @size-change="handleSizeChange"
-        />
-      </div>
+        <!-- 分页 -->
+        <div class="pagination-wrapper">
+          <el-pagination
+            v-model:current-page="pageNum"
+            v-model:page-size="pageSize"
+            :page-sizes="[10, 20, 50, 100]"
+            :total="total"
+            layout="total, sizes, prev, pager, next, jumper"
+            @current-change="handlePageChange"
+            @size-change="handleSizeChange"
+          />
+        </div>
+      </template>
+      <!-- 无数据且非加载中时显示空状态 -->
+      <EmptyState
+        v-else
+        description="暂无数据"
+        :show-action="true"
+        action-text="新增菜品"
+        @action="handleAdd"
+      />
     </div>
 
     <!-- 分类弹窗 -->
@@ -345,6 +356,7 @@ import { ElMessage, ElMessageBox, type FormInstance, type FormRules, type Upload
 import { Plus, Edit, Delete } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import { useTableList } from '@/composables/useTableList'
+import EmptyState from '@/components/EmptyState.vue'
 import {
   getDishList,
   createDish,

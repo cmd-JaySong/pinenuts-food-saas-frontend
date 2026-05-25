@@ -52,98 +52,107 @@
       </el-button>
     </div>
 
-    <!-- 表格 -->
-    <el-table :data="tableData" v-loading="loading" border style="width: 100%">
-      <el-table-column prop="itemCode" label="物料编码" width="130" />
-      <el-table-column prop="itemName" label="物料名称" min-width="140" />
-      <el-table-column prop="category" label="分类" width="100" />
-      <el-table-column prop="storeName" label="所属门店" width="130" />
-      <el-table-column label="库存量" width="100" align="right">
-        <template #default="scope">
-          <span
-            :style="{
-              color: scope.row.alertThreshold && scope.row.quantity < scope.row.alertThreshold ? '#f56c6c' : ''
-            }"
-          >
-            {{ scope.row.quantity }}
-          </span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="unit" label="单位" width="80" align="center" />
-      <el-table-column label="成本价" width="100" align="right">
-        <template #default="scope">
-          ¥{{ scope.row.costPrice != null ? scope.row.costPrice.toFixed(2) : '0.00' }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="alertThreshold" label="预警阈值" width="100" align="center" />
-      <el-table-column label="状态" width="80" align="center">
-        <template #default="scope">
-          <el-tag :type="scope.row.status === 1 ? 'success' : 'info'" size="small">
-            {{ scope.row.status === 1 ? '正常' : '停用' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="300" fixed="right">
-        <template #default="scope">
-          <el-button
-            v-if="userStore.hasPermission('inventory:inbound')"
-            link
-            type="primary"
-            @click="handleInbound(scope.row)"
-          >
-            入库
-          </el-button>
-          <el-button
-            v-if="userStore.hasPermission('inventory:outbound')"
-            link
-            type="warning"
-            @click="handleOutbound(scope.row)"
-          >
-            出库
-          </el-button>
-          <el-button
-            v-if="userStore.hasPermission('inventory:inbound')"
-            link
-            type="success"
-            @click="handleCheck(scope.row)"
-          >
-            盘点
-          </el-button>
-          <el-button link type="info" @click="handleFlow(scope.row)">
-            流水
-          </el-button>
-          <el-button
-            v-if="userStore.hasPermission('inventory:inbound')"
-            link
-            type="primary"
-            @click="handleEdit(scope.row)"
-          >
-            编辑
-          </el-button>
-          <el-button
-            v-if="userStore.hasPermission('inventory:inbound')"
-            link
-            type="danger"
-            @click="handleDelete(scope.row)"
-          >
-            删除
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <!-- 有数据时显示表格 + 分页 -->
+    <template v-if="tableData.length > 0 || loading">
+      <el-table :data="tableData" v-loading="loading" border style="width: 100%">
+        <el-table-column prop="itemCode" label="物料编码" width="130" />
+        <el-table-column prop="itemName" label="物料名称" min-width="140" />
+        <el-table-column prop="category" label="分类" width="100" />
+        <el-table-column prop="storeName" label="所属门店" width="130" />
+        <el-table-column label="库存量" width="100" align="right">
+          <template #default="scope">
+            <span
+              :style="{
+                color: scope.row.alertThreshold && scope.row.quantity < scope.row.alertThreshold ? '#f56c6c' : ''
+              }"
+            >
+              {{ scope.row.quantity }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="unit" label="单位" width="80" align="center" />
+        <el-table-column label="成本价" width="100" align="right">
+          <template #default="scope">
+            ¥{{ scope.row.costPrice != null ? scope.row.costPrice.toFixed(2) : '0.00' }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="alertThreshold" label="预警阈值" width="100" align="center" />
+        <el-table-column label="状态" width="80" align="center">
+          <template #default="scope">
+            <el-tag :type="scope.row.status === 1 ? 'success' : 'info'" size="small">
+              {{ scope.row.status === 1 ? '正常' : '停用' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="300" fixed="right">
+          <template #default="scope">
+            <el-button
+              v-if="userStore.hasPermission('inventory:inbound')"
+              link
+              type="primary"
+              @click="handleInbound(scope.row)"
+            >
+              入库
+            </el-button>
+            <el-button
+              v-if="userStore.hasPermission('inventory:outbound')"
+              link
+              type="warning"
+              @click="handleOutbound(scope.row)"
+            >
+              出库
+            </el-button>
+            <el-button
+              v-if="userStore.hasPermission('inventory:inbound')"
+              link
+              type="success"
+              @click="handleCheck(scope.row)"
+            >
+              盘点
+            </el-button>
+            <el-button link type="info" @click="handleFlow(scope.row)">
+              流水
+            </el-button>
+            <el-button
+              v-if="userStore.hasPermission('inventory:inbound')"
+              link
+              type="primary"
+              @click="handleEdit(scope.row)"
+            >
+              编辑
+            </el-button>
+            <el-button
+              v-if="userStore.hasPermission('inventory:inbound')"
+              link
+              type="danger"
+              @click="handleDelete(scope.row)"
+            >
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
 
-    <!-- 分页 -->
-    <div class="pagination-wrapper">
-      <el-pagination
-        v-model:current-page="pageNum"
-        v-model:page-size="pageSize"
-        :page-sizes="[10, 20, 50, 100]"
-        :total="total"
-        layout="total, sizes, prev, pager, next, jumper"
-        @current-change="handlePageChange"
-        @size-change="handleSizeChange"
-      />
-    </div>
+      <div class="pagination-wrapper">
+        <el-pagination
+          v-model:current-page="pageNum"
+          v-model:page-size="pageSize"
+          :page-sizes="[10, 20, 50, 100]"
+          :total="total"
+          layout="total, sizes, prev, pager, next, jumper"
+          @current-change="handlePageChange"
+          @size-change="handleSizeChange"
+        />
+      </div>
+    </template>
+    <!-- 无数据且非加载中时显示空状态 -->
+    <EmptyState
+      v-else
+      description="暂无数据"
+      :show-action="true"
+      action-text="新增物料"
+      @action="handleAdd"
+    />
 
     <!-- 新增/编辑物料弹窗 -->
     <el-dialog v-model="itemDialogVisible" :title="itemDialogTitle" width="560px" destroy-on-close>
@@ -333,6 +342,7 @@ import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'elem
 import { Plus } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import { useTableList } from '@/composables/useTableList'
+import EmptyState from '@/components/EmptyState.vue'
 import {
   getInventoryList,
   createInventoryItem,

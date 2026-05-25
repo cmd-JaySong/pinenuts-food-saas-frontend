@@ -53,6 +53,11 @@ service.interceptors.response.use(
     if (error.response?.status === 401) {
       return handleUnauthorized(error.config, error.response.data)
     }
+    if (error.response?.status === 400) {
+      const message = error.response.data?.message || '请求参数有误'
+      ElMessage.error(message)
+      return Promise.reject(error)
+    }
     ElMessage.error(error.message || '网络错误')
     return Promise.reject(error)
   }
